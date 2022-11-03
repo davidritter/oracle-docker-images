@@ -1,4 +1,4 @@
-# Copyright (c) 2019, 2022 Oracle and/or its affiliates. 
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 #
@@ -34,22 +34,27 @@ RUN set -eux; \
 		tar \
 	; \
 	rm -rf /var/cache/yum
+	
+
+# DFR added this
+RUN yum -y install gcc-c++.x86_64
 
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-# Environment variables for the builder image.
+# Environment variables for the builder image.  
 # Required to validate that you are using the correct file
 
-ENV JAVA_PKG=server-jre-8u351-linux-x64.tar.gz \
-	JAVA_SHA256=388157820c1c25d2d6dc1decab9d2d5273bee84ab54c0204feb6d2530837983c \
+ENV JAVA_PKG=server-jre-8u271-linux-x64.tar.gz \
+	JAVA_SHA256=c4150bbbf6d7eec7dca1d522d4c7f4da12a592206cf8b30ef4902f8a011f8a4a \
 	JAVA_HOME=/usr/java/jdk-8
 
 COPY $JAVA_PKG /tmp/jdk.tgz
 RUN set -eux; \
 	echo "$JAVA_SHA256 */tmp/jdk.tgz" | sha256sum -c -; \
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; 
+	tar --extract --file /tmp/jdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
+	rm /tmp/jdk.tgz
 
 ## Get a fresh version of SLIM for the final image
 
@@ -58,7 +63,7 @@ FROM oraclelinux:7-slim
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_VERSION=1.8.0_351 \
+ENV JAVA_VERSION=1.8.0_271 \
 	JAVA_HOME=/usr/java/jdk-8 
 	
 ENV	PATH $JAVA_HOME/bin:$PATH
@@ -67,9 +72,7 @@ ENV	PATH $JAVA_HOME/bin:$PATH
 COPY --from=builder $JAVA_HOME $JAVA_HOME
 
 ##
-RUN	yum -y update; \
-	rm -rf /var/cache/yum; \
-	ln -sfT "$JAVA_HOME" /usr/java/default; \
+RUN	ln -sfT "$JAVA_HOME" /usr/java/default; \
 	ln -sfT "$JAVA_HOME" /usr/java/latest; \
 	for bin in "$JAVA_HOME/bin/"*; do \
 		base="$(basename "$bin")"; \
@@ -79,5 +82,8 @@ RUN	yum -y update; \
 # -Xshare:dump will create a CDS archive to improve startup in subsequent runs	
 # the file will be stored as /usr/java/jdk-8/jre/lib/amd64/server/classes.jsa 
 # See https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
-	java -Xshare:dump;
+	java -Xshare:dump; \
+	java -version; \
+	javac -version; \
+	grep VERSION= /etc/os-release
 	
