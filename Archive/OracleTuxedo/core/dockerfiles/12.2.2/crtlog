@@ -1,0 +1,5 @@
+tmadmin <<-!
+    echo
+    crdl -b 500 -z ${TLOGDEVICE}
+    q
+!

@@ -1,0 +1,41 @@
+*RESOURCES
+IPCKEY  123456
+DOMAINID        tuxedoapp
+MASTER          tuxedo
+MAXACCESSERS    50
+MAXSERVERS              20
+MAXSERVICES             20
+MODEL           SHM
+LDBAL           N
+
+*MACHINES
+DEFAULT:
+    APPDIR="/u01/oracle/user_projects"
+    TUXCONFIG="/u01/oracle/tuxHome/tuxedo12.2.2.0.0/tuxconfig"
+    TUXDIR="/u01/oracle/tuxHome/tuxedo12.2.2.0.0"
+    TLOGDEVICE="/u01/oracle/tuxHome/logs"
+    TLOGNAME="file"
+    TLOGSIZE=100
+
+tuxedo  LMID=tuxedo
+*GROUPS
+GROUP1
+    LMID=tuxedo GRPNO=1
+    OPENINFO="INFORMIX-OnLine:8003|GRUNT"
+    TMSNAME="TMS_Informix"
+    TMSCOUNT=2
+
+*SERVERS
+DEFAULT:
+            CLOPT="-A"
+#simpserv    SRVGRP=GROUP1 SRVID=1
+testxaserver	SRVGRP=GROUP1	SRVID=1
+#  CLOPT="-A -- -T INFORMIX -R XA=8003"
+  CLOPT="-A -- -T libinf7012d.so -B QE1 -R XA=8003"
+
+*SERVICES
+SERV_INS_DATA
+SERV_UPD_DATA
+SERV_DEL_DATA
+SERV_CHK_DATA
+#TOUPPER

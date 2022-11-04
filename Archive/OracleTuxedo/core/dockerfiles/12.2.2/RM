@@ -1,0 +1,10 @@
+TUXEDO/D:tuxd_switch:-lrms -lfs
+TUXEDO/SQL:tuxsql_switch:-lsql -lusort -lrms -lfs
+NONE:tmnull_switch:
+TUXEDO/QM:tuxq_switch:-lqm -ltmib
+#
+# BEA makes no attempt to keep the information in the following samples
+# up to date.  To make sure you have correct and complete information for
+# your platform and RM version, please consult your RM vendor.
+#
+INFORMIX-OnLine:_Odbc_xa_switch: -L${INFORMIXDIR}/lib -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql  -lifcli -lifdmr -lm -ldl
